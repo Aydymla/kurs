@@ -2,16 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Редактор красной</title>
     <style>
+
+
         body {
             --bg-color: var(--tg-theme-bg-color);
             font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
-            background-image: url('./01.jpg');
+            background-image: url('./Logo.png');
             background-size: cover;
             background-position: center;
-            color: #000000;
+/*             color: var(--tg-theme-text-color); */
+            color: #ffffff;
             margin: 0;
             padding: 10mm 24px 0 24px;
             color-scheme: var(--tg-color-scheme);
@@ -20,7 +24,6 @@
             align-items: center;
             height: 100vh;
         }
-
         form {
             width: 100%;
             max-width: 400px;
@@ -29,142 +32,280 @@
             padding: 20px;
             border-radius: 10px;
         }
-
-        h1, label, .toggle-container {
-            background-color: #ffffff; /* Белый фон */
-            color: #000000; /* Черный цвет текста */
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
+        h1 {
             margin-bottom: 20px;
             font-size: 24px;
             text-align: center;
         }
-
-        input[type="password"], input[type="radio"] {
-            width: calc(100% - 2mm); /* Учитывая padding */
-            padding: 10px 1mm; /* 1mm padding слева и справа */
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
+        
+/*         body {
+            --bg-color: var(--tg-theme-bg-color);
+            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;             background-image: url('https://kartinki.pics/uploads/posts/2021-07/1626829732_32-kartinkin-com-p-zadnii-fon-cherno-belii-krasivo-32.jpg'); */
+            background-size: cover;
+            background-position: center;
+            color: var(--tg-theme-text-color);
+            margin: 48px 24px;
+            padding: 0;
+            color-scheme: var(--tg-color-scheme);
+        } */
+        
+        #viewport {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: var(--tg-viewport-stable-height, 100vh);
+            pointer-events: none;
+            transition: all .2s ease;
+        }
+        #viewport-params-size,
+        #viewport-params-expand {
+            content: attr(text);
+            position: absolute;
+            display: inline-block;
+            background: var(--tg-theme-link-color, rgb(64, 224, 208));
+            right: 4px;
+            left: auto;
+            font-size: 8px;
+            padding: 4px;
+            vertical-align: top;
+        }
+        #viewport-params-size {
+            top: 4px;
+        }
+        #viewport-params-expand {
+            top: 30px;
+        }
+        label, select, input, textarea {
+            margin: 5px;
+            padding: 5px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        #userIdDisplay {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            padding: 10px;
             border-radius: 5px;
-            box-sizing: border-box; /* Учитывает padding в ширине */
-            background: rgba(255, 255, 255, 0.5); /* Полупрозрачный белый фон */
-            color: #000; /* Черный цвет текста */
+            z-index: 1000;
         }
-
-        label[for="password"] {
-            background-color: yellow; /* Желтый фон для "ПАРОЛЬ" */
+        #additionalData {
+            display: none;
+            margin-top: 20px;
         }
-
-        button {
-            width: 100%; 
-            padding: 20px;
+        .toggle-btn {
             background-color: #007bff;
             color: #fff;
             border: none;
             border-radius: 5px;
+            padding: 10px 20px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 20px; /* Дополнительное пространство сверху */
         }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .toggle-container {
-            display: flex;
-            background-color: yellow;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .toggle-btn {
-            width: 48%;
-            padding: 10px;
-            background-color: #fff;
-            color: #000;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            text-align: center;
-            font-weight: bold; /* Жирный текст */
-        }
-
-        .toggle-btn.active {
-            background-color: #007bff;
-            color: #fff;
-        }
-
         .toggle-btn:hover {
             background-color: #0056b3;
-            color: #fff;
         }
-
-        .error-message {
-            color: red;
-            display: none;
-            text-align: center;
+        .keyboard-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <form id="loginForm">
-        <label for="password">ПАРОЛЬ:</label>
-        <input type="password" id="password" name="password" required>
-        <div class="toggle-container">
-            <div id="vn" class="toggle-btn" onclick="selectActionType('vn')">Внесение</div>
-            <div id="vd" class="toggle-btn" onclick="selectActionType('vd')">Выдача</div>
-            <input type="hidden" id="actionType" name="actionType" required>
-        </div>
-        <button type="submit">ВХОД</button>
-        <p class="error-message" id="errorMessage">Invalid password</p>
-    </form>
+    <div id="userIdDisplay">ID: </div>
+    <button class="keyboard-btn" onclick="toggleKeyboard()">Клавиатура</button>
+    <input type="text" id="hiddenInput" style="position: absolute; top: -9999px; left: -9999px;">
+    <main>
+        <form id="dataForm">
+            <h1>Редактируем крассную</h1>
+            <label for="branch">Отделения:</label>
+            <select id="branch" name="branch" required></select>
+
+            <div id="ratesTable" style="margin-top: 20px;">
+                <table style="width: 100%; border-collapse: collapse; color: white;">
+                    <thead>
+                        <tr>
+                            <th>Валюта</th>
+                            <th>Покупка</th>
+                            <th>Продажа</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ratesBody"></tbody>
+                </table>
+            </div>
+            
+            <input class="submit-btn" type="submit" value="Отправить">
+        </form>
+    </main>
+    <div id="viewport"></div>
+    <div id="viewport-params-size"></div>
+    <div id="viewport-params-expand"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         // Init TWA
         Telegram.WebApp.ready();
 
-        document.addEventListener('DOMContentLoaded', function() {
+        Telegram.WebApp.onEvent('themeChanged', function() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        });
+
+        function setViewportData() {
+            var sizeEl = document.getElementById('viewport-params-size');
+        }
+
+        Telegram.WebApp.setHeaderColor('secondary_bg_color');
+
+        setViewportData();
+        Telegram.WebApp.onEvent('viewportChanged', setViewportData);
+
+        Telegram.WebApp.onEvent('themeChanged', function() {
+            document.body.setAttribute('style', '--bg-color:' + Telegram.WebApp.backgroundColor);
+        });
+
+        function getFlagEmoji(code) {
+            const flags = {
+                ILS: '🇮🇱', TRY: '🇹🇷', SEK: '🇸🇪', CNY: '🇨🇳', CZK: '🇨🇿', HUF: '🇭🇺',
+                GEL: '🇬🇪', EGP: '🇪🇬', MDL: '🇲🇩', AED: '🇦🇪', BGN: '🇧🇬', DKK: '🇩🇰',
+                NOK: '🇳🇴', AZN: '🇦🇿', AUD: '🇦🇺', RON: '🇷🇴', THB: '🇹🇭', HRK: '🇭🇷',
+                RSD: '🇷🇸', LBP: '🇱🇧', KRW: '🇰🇷', TMT: '🇹🇲', INR: '🇮🇳', SBP: '🏳️',
+                KZT: '🇰🇿', TWD: '🇹🇼', HKD: '🇭🇰', IDR: '🇮🇩', MYR: '🇲🇾', ZAR: '🇿🇦',
+                AMD: '🇦🇲', ALL: '🇦🇱', SGD: '🇸🇬', JPY: '🇯🇵', IEP: '🇮🇪', MXN: '🇲🇽',
+                SKK: '🇸🇰', LKR: '🇱🇰', VND: '🇻🇳', UZS: '🇺🇿', EUB: '🏳️', BRL: '🇧🇷',
+                GBB: '🇬🇧', ISK: '🇮🇸', JOD: '🇯🇴', TND: '🇹🇳', PHP: '🇵🇭', NZD: '🇳🇿',
+                SAR: '🇸🇦', NPR: '🇳🇵', USDT: '🏳️', MKD: '🇲🇰', CRC: '🇨🇷', IRR: '🇮🇷',
+                BAM: '🇧🇦', LYD: '🇱🇾', BZD: '🇧🇿', TTD: '🇹🇹', KWD: '🇰🇼', QAR: '🇶🇦',
+                CLP: '🇨🇱', NAD: '🇳🇦', HTG: '🇭🇹', IQD: '🇮🇶', MAD: '🇲🇦', MOP: '🇲🇴',
+                TZS: '🇹🇿', ATS: '🏳️', SCR: '🇸🇨', OMR: '🇴🇲', BND: '🇧🇳', KES: '🇰🇪',
+                BEF: '🇧🇪', DOP: '🇩🇴', VUV: '🇻🇺', UYU: '🇺🇾', KGS: '🇰🇬', BBD: '🇧🇧',
+                COP: '🇨🇴', SRD: '🇸🇷', GYD: '🇬🇾'
+            };
+            return flags[code] || '🏳️';
+        }
+        
+        function toggleAdditionalData() {
+            const additionalData = document.getElementById('additionalData');
+            if (additionalData.style.display === 'none' || additionalData.style.display === '') {
+                additionalData.style.display = 'block';
+            } else {
+                additionalData.style.display = 'none';
+            }
+        }
+
+        function toggleKeyboard() {
+            const hiddenInput = document.getElementById('hiddenInput');
+            hiddenInput.focus();
+            setTimeout(() => {
+                hiddenInput.blur();
+            }, 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            let userData = {};
             if (Telegram.WebApp) {
                 Telegram.WebApp.ready();
                 Telegram.WebApp.expand();
-                const userData = Telegram.WebApp.initDataUnsafe.user;
+                userData = Telegram.WebApp.initDataUnsafe.user;
                 console.log(userData);
+                document.getElementById('userIdDisplay').textContent = ${userData.username};
             } else {
                 console.error('Telegram.WebApp не найдено');
             }
-        });
 
-        function selectActionType(type) {
-            document.getElementById('vn').classList.remove('active');
-            document.getElementById('vd').classList.remove('active');
-            document.getElementById(type).classList.add('active');
-            document.getElementById('actionType').value = type;
-        }
+            const response = await fetch('https://script.google.com/macros/s/AKfycbx0ZrTyKAsCLQJpnANA22Or1Jf_0jSucpLDtwKpbyXw7OHgZhZe0sn_bQrMYCN4R0AV/exec');
+            const data = await response.json();
 
-        document.getElementById('loginForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const password = document.getElementById('password').value;
-            const actionType = document.getElementById('actionType').value;
-            
-            // Simple hardcoded authentication
-            if (password === '12345') {
-                if (actionType === 'vn') {
-                    window.location.href = 'vn.html';
-                } else if (actionType === 'vd') {
-                    window.location.href = 'vd.html';
-                }
-            } else {
-                document.getElementById('errorMessage').style.display = 'block';
+            try {
+                const branchSelect = document.getElementById('branch');
+
+                data.branch.forEach(branch => {
+                    const option = document.createElement('option');
+                    option.value = branch;
+                    option.text = branch.slice(0, -9); // Удалить последние 9 символов
+                    branchSelect.appendChild(option);
+                });
+
+                const ratesBody = document.getElementById('ratesBody');
+                const currencies = data.currency || [];
+                const buyRates = data.buy || [];
+                const sellRates = data.sell || [];
+                
+                currencies.forEach((code, i) => {
+                    const flag = getFlagEmoji(code);
+                    const buy = buyRates[i] || '';
+                    const sell = sellRates[i] || '';
+                
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${code} ${flag}</td>
+                        <td><input type="text" name="buy_${code}" value="${buy}" style="width: 100%;"></td>
+                        <td><input type="text" name="sell_${code}" value="${sell}" style="width: 100%;"></td>
+                    `;
+                    ratesBody.appendChild(row);
+                });
+
+                
+            } catch (error) {
+                console.error('Ошибка при загрузке данных для выпадающих списков:', error.message);
             }
+
+            // Add event listener to fetch contractor based on code
+            document.getElementById('code').addEventListener('input', async function() {
+                const code = this.value;
+                if (code) {
+                    try {
+                        const response = await fetch(https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec?code=${code});
+                        const data = await response.json();
+                        if (data.contractor) {
+                            document.getElementById('contractor').innerHTML = <option value="${data.contractor}">${data.contractor}</option>;
+                        } else {
+                            document.getElementById('contractor').innerHTML = <option value="">Код не найден</option>;
+                        }
+                    } catch (error) {
+                        console.error('Ошибка при получении контрагента:', error.message);
+                    }
+                } else {
+                    document.getElementById('contractor').innerHTML = '';
+                }
+            });
+
+            const form = document.getElementById('dataForm');
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                formData.append('tgUserId', userData.id || '');
+                formData.append('tgUserName', userData.username || '');
+                formData.append('operation', 'updateRates');
+
+                try {
+                    const response = await fetch('https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    if (data.result === 'success') {
+                        alert('Данные успешно отправлены!');
+                        Telegram.WebApp.close();
+                    } else {
+                        alert('При отправке данных произошла ошибка: ' + data.message);
+                    }
+                } catch (error) {
+                    console.error('Ошибка!', error.message);
+                }
+            });
         });
     </script>
 </body>
