@@ -224,7 +224,7 @@
                 console.error('Telegram.WebApp не найдено');
             }
 
-            const response = await fetch('https://script.google.com/macros/s/AKfycbx0ZrTyKAsCLQJpnANA22Or1Jf_0jSucpLDtwKpbyXw7OHgZhZe0sn_bQrMYCN4R0AV/exec');
+            const response = await fetch(`https://script.google.com/macros/s/AKfycbx0ZrTyKAsCLQJpnANA22Or1Jf_0jSucpLDtwKpbyXw7OHgZhZe0sn_bQrMYCN4R0AV/exec`);
             const data = await response.json();
 
             try {
@@ -266,7 +266,7 @@
                 const code = this.value;
                 if (code) {
                     try {
-                        const response = await fetch(https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec?code=${code});
+                        const response = await fetch(`https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec?code=${code}`);
                         const data = await response.json();
                         if (data.contractor) {
                             document.getElementById('contractor').innerHTML = <option value="${data.contractor}">${data.contractor}</option>;
@@ -291,7 +291,7 @@
                 formData.append('operation', 'updateRates');
 
                 try {
-                    const response = await fetch('https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec', {
+                    const response = await fetch(`https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec`, {
                         method: 'POST',
                         body: formData
                     });
