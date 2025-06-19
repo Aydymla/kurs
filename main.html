@@ -68,7 +68,7 @@
       }
 
       try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec');
+        const response = await fetch('https://script.google.com/macros/s/AKfycbx0ZrTyKAsCLQJpnANA22Or1Jf_0jSucpLDtwKpbyXw7OHgZhZe0sn_bQrMYCN4R0AV/exec');
         const data = await response.json();
 
         const branchSelect = document.getElementById('branch');
@@ -92,7 +92,7 @@
         formData.append('operation', 'Выдача');
 
         try {
-          const response = await fetch('https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec', {
+          const response = await fetch('https://script.google.com/macros/s/AKfycbx0ZrTyKAsCLQJpnANA22Or1Jf_0jSucpLDtwKpbyXw7OHgZhZe0sn_bQrMYCN4R0AV/exec', {
             method: 'POST',
             body: formData
           });
