@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            --bg-color: var(--tg-theme-bg-color);
+            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
+            background-image: url('./01.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #000000;
+            margin: 0;
+            padding: 10mm 24px 0 24px;
+            color-scheme: var(--tg-color-scheme);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h1, label, .toggle-container {
+            background-color: #ffffff; /* Белый фон */
+            color: #000000; /* Черный цвет текста */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        input[type="password"], input[type="radio"] {
+            width: calc(100% - 2mm); /* Учитывая padding */
+            padding: 10px 1mm; /* 1mm padding слева и справа */
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Учитывает padding в ширине */
+            background: rgba(255, 255, 255, 0.5); /* Полупрозрачный белый фон */
+            color: #000; /* Черный цвет текста */
+        }
+
+        label[for="password"] {
+            background-color: yellow; /* Желтый фон для "ПАРОЛЬ" */
+        }
+
+        button {
+            width: 100%; 
+            padding: 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px; /* Дополнительное пространство сверху */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .toggle-container {
+            display: flex;
+            background-color: yellow;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            width: 48%;
+            padding: 10px;
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            font-weight: bold; /* Жирный текст */
+        }
+
+        .toggle-btn.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .toggle-btn:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .error-message {
+            color: red;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <form id="loginForm">
+        <label for="password">ПАРОЛЬ:</label>
+        <input type="password" id="password" name="password" required>
+        <div class="toggle-container">
+            <div id="vn" class="toggle-btn" onclick="selectActionType('vn')">Внесение</div>
+            <div id="vd" class="toggle-btn" onclick="selectActionType('vd')">Выдача</div>
+            <input type="hidden" id="actionType" name="actionType" required>
+        </div>
+        <button type="submit">ВХОД</button>
+        <p class="error-message" id="errorMessage">Invalid password</p>
+    </form>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Init TWA
+        Telegram.WebApp.ready();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (Telegram.WebApp) {
+                Telegram.WebApp.ready();
+                Telegram.WebApp.expand();
+                const userData = Telegram.WebApp.initDataUnsafe.user;
+                console.log(userData);
+            } else {
+                console.error('Telegram.WebApp не найдено');
+            }
+        });
+
+        function selectActionType(type) {
+            document.getElementById('vn').classList.remove('active');
+            document.getElementById('vd').classList.remove('active');
+            document.getElementById(type).classList.add('active');
+            document.getElementById('actionType').value = type;
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const password = document.getElementById('password').value;
+            const actionType = document.getElementById('actionType').value;
+            
+            // Simple hardcoded authentication
+            if (password === '12345') {
+                if (actionType === 'vn') {
+                    window.location.href = 'vn.html';
+                } else if (actionType === 'vd') {
+                    window.location.href = 'vd.html';
+                }
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
