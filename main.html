@@ -1,312 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Редактор красной</title>
-    <style>
-
-
-        body {
-            --bg-color: var(--tg-theme-bg-color);
-            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
-            background-image: url('./Logo.png');
-            background-size: cover;
-            background-position: center;
-/*             color: var(--tg-theme-text-color); */
-            color: #ffffff;
-            margin: 0;
-            padding: 10mm 24px 0 24px;
-            color-scheme: var(--tg-color-scheme);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        form {
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон */
-            padding: 20px;
-            border-radius: 10px;
-        }
-        h1 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            text-align: center;
-        }
-        
-/*         body {
-            --bg-color: var(--tg-theme-bg-color);
-            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;             background-image: url('https://kartinki.pics/uploads/posts/2021-07/1626829732_32-kartinkin-com-p-zadnii-fon-cherno-belii-krasivo-32.jpg'); */
-            background-size: cover;
-            background-position: center;
-            color: var(--tg-theme-text-color);
-            margin: 48px 24px;
-            padding: 0;
-            color-scheme: var(--tg-color-scheme);
-        } */
-        
-        #viewport {
-            position: fixed;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: var(--tg-viewport-stable-height, 100vh);
-            pointer-events: none;
-            transition: all .2s ease;
-        }
-        #viewport-params-size,
-        #viewport-params-expand {
-            content: attr(text);
-            position: absolute;
-            display: inline-block;
-            background: var(--tg-theme-link-color, rgb(64, 224, 208));
-            right: 4px;
-            left: auto;
-            font-size: 8px;
-            padding: 4px;
-            vertical-align: top;
-        }
-        #viewport-params-size {
-            top: 4px;
-        }
-        #viewport-params-expand {
-            top: 30px;
-        }
-        label, select, input, textarea {
-            margin: 5px;
-            padding: 5px;
-            font-size: 16px;
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-        }
-        #userIdDisplay {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 1000;
-        }
-        #additionalData {
-            display: none;
-            margin-top: 20px;
-        }
-        .toggle-btn {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .toggle-btn:hover {
-            background-color: #0056b3;
-        }
-        .keyboard-btn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 1000;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Выбор города</title>
+  <style>
+    body {
+      font: 14px Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    form {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+    label, select {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    select {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-    <div id="userIdDisplay">ID: </div>
-    <button class="keyboard-btn" onclick="toggleKeyboard()">Клавиатура</button>
-    <input type="text" id="hiddenInput" style="position: absolute; top: -9999px; left: -9999px;">
-    <main>
-        <form id="dataForm">
-            <h1>Редактируем крассную</h1>
-            <label for="branch">Отделения:</label>
-            <select id="branch" name="branch" required></select>
+  <form id="cityForm">
+    <label for="branch">Выберите город:</label>
+    <select id="branch" name="branch" required></select>
+    <input class="submit-btn" type="submit" value="Отправить" />
+  </form>
 
-            <div id="ratesTable" style="margin-top: 20px;">
-                <table style="width: 100%; border-collapse: collapse; color: white;">
-                    <thead>
-                        <tr>
-                            <th>Валюта</th>
-                            <th>Покупка</th>
-                            <th>Продажа</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ratesBody"></tbody>
-                </table>
-            </div>
-            
-            <input class="submit-btn" type="submit" value="Отправить">
-        </form>
-    </main>
-    <div id="viewport"></div>
-    <div id="viewport-params-size"></div>
-    <div id="viewport-params-expand"></div>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        // Init TWA
-        Telegram.WebApp.ready();
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
 
-        Telegram.WebApp.onEvent('themeChanged', function() {
-            document.documentElement.className = Telegram.WebApp.colorScheme;
+    let userData = {};
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
+        userData = Telegram.WebApp.initDataUnsafe.user;
+      }
+
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec');
+        const data = await response.json();
+
+        const branchSelect = document.getElementById('branch');
+        data.branch.forEach(branch => {
+          const option = document.createElement('option');
+          option.value = branch;
+          option.text = branch.slice(0, -9);
+          branchSelect.appendChild(option);
         });
+      } catch (error) {
+        console.error('Ошибка при загрузке городов:', error.message);
+      }
 
-        function setViewportData() {
-            var sizeEl = document.getElementById('viewport-params-size');
+      document.getElementById('cityForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('branch', document.getElementById('branch').value);
+        formData.append('tgUserId', userData.id || '');
+        formData.append('tgUserName', userData.username || '');
+        formData.append('operation', 'Выдача');
+
+        try {
+          const response = await fetch('https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec', {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+          if (result.result === 'success') {
+            alert('Город отправлен!');
+            Telegram.WebApp.close();
+          } else {
+            alert('Ошибка: ' + result.message);
+          }
+        } catch (err) {
+          console.error('Ошибка отправки:', err.message);
         }
-
-        Telegram.WebApp.setHeaderColor('secondary_bg_color');
-
-        setViewportData();
-        Telegram.WebApp.onEvent('viewportChanged', setViewportData);
-
-        Telegram.WebApp.onEvent('themeChanged', function() {
-            document.body.setAttribute('style', '--bg-color:' + Telegram.WebApp.backgroundColor);
-        });
-
-        function getFlagEmoji(code) {
-            const flags = {
-                ILS: '🇮🇱', TRY: '🇹🇷', SEK: '🇸🇪', CNY: '🇨🇳', CZK: '🇨🇿', HUF: '🇭🇺',
-                GEL: '🇬🇪', EGP: '🇪🇬', MDL: '🇲🇩', AED: '🇦🇪', BGN: '🇧🇬', DKK: '🇩🇰',
-                NOK: '🇳🇴', AZN: '🇦🇿', AUD: '🇦🇺', RON: '🇷🇴', THB: '🇹🇭', HRK: '🇭🇷',
-                RSD: '🇷🇸', LBP: '🇱🇧', KRW: '🇰🇷', TMT: '🇹🇲', INR: '🇮🇳', SBP: '🏳️',
-                KZT: '🇰🇿', TWD: '🇹🇼', HKD: '🇭🇰', IDR: '🇮🇩', MYR: '🇲🇾', ZAR: '🇿🇦',
-                AMD: '🇦🇲', ALL: '🇦🇱', SGD: '🇸🇬', JPY: '🇯🇵', IEP: '🇮🇪', MXN: '🇲🇽',
-                SKK: '🇸🇰', LKR: '🇱🇰', VND: '🇻🇳', UZS: '🇺🇿', EUB: '🏳️', BRL: '🇧🇷',
-                GBB: '🇬🇧', ISK: '🇮🇸', JOD: '🇯🇴', TND: '🇹🇳', PHP: '🇵🇭', NZD: '🇳🇿',
-                SAR: '🇸🇦', NPR: '🇳🇵', USDT: '🏳️', MKD: '🇲🇰', CRC: '🇨🇷', IRR: '🇮🇷',
-                BAM: '🇧🇦', LYD: '🇱🇾', BZD: '🇧🇿', TTD: '🇹🇹', KWD: '🇰🇼', QAR: '🇶🇦',
-                CLP: '🇨🇱', NAD: '🇳🇦', HTG: '🇭🇹', IQD: '🇮🇶', MAD: '🇲🇦', MOP: '🇲🇴',
-                TZS: '🇹🇿', ATS: '🏳️', SCR: '🇸🇨', OMR: '🇴🇲', BND: '🇧🇳', KES: '🇰🇪',
-                BEF: '🇧🇪', DOP: '🇩🇴', VUV: '🇻🇺', UYU: '🇺🇾', KGS: '🇰🇬', BBD: '🇧🇧',
-                COP: '🇨🇴', SRD: '🇸🇷', GYD: '🇬🇾'
-            };
-            return flags[code] || '🏳️';
-        }
-        
-        function toggleAdditionalData() {
-            const additionalData = document.getElementById('additionalData');
-            if (additionalData.style.display === 'none' || additionalData.style.display === '') {
-                additionalData.style.display = 'block';
-            } else {
-                additionalData.style.display = 'none';
-            }
-        }
-
-        function toggleKeyboard() {
-            const hiddenInput = document.getElementById('hiddenInput');
-            hiddenInput.focus();
-            setTimeout(() => {
-                hiddenInput.blur();
-            }, 100);
-        }
-
-        document.addEventListener('DOMContentLoaded', async function() {
-            let userData = {};
-            if (Telegram.WebApp) {
-                Telegram.WebApp.ready();
-                Telegram.WebApp.expand();
-                userData = Telegram.WebApp.initDataUnsafe.user;
-                console.log(userData);
-                document.getElementById('userIdDisplay').textContent = ${userData.username};
-            } else {
-                console.error('Telegram.WebApp не найдено');
-            }
-
-            const response = await fetch('https://script.google.com/macros/s/AKfycbx0ZrTyKAsCLQJpnANA22Or1Jf_0jSucpLDtwKpbyXw7OHgZhZe0sn_bQrMYCN4R0AV/exec');
-            const data = await response.json();
-
-            try {
-                const branchSelect = document.getElementById('branch');
-
-                data.branch.forEach(branch => {
-                    const option = document.createElement('option');
-                    option.value = branch;
-                    option.text = branch.slice(0, -9); // Удалить последние 9 символов
-                    branchSelect.appendChild(option);
-                });
-
-                const ratesBody = document.getElementById('ratesBody');
-                const currencies = data.currency || [];
-                const buyRates = data.buy || [];
-                const sellRates = data.sell || [];
-                
-                currencies.forEach((code, i) => {
-                    const flag = getFlagEmoji(code);
-                    const buy = buyRates[i] || '';
-                    const sell = sellRates[i] || '';
-                
-                    const row = document.createElement('tr');
-                    row.innerHTML = 
-                        <td>${code} ${flag}</td>
-                        <td><input type="text" name="buy_${code}" value="${buy}" style="width: 100%;"></td>
-                        <td><input type="text" name="sell_${code}" value="${sell}" style="width: 100%;"></td>
-                    ;
-                    ratesBody.appendChild(row);
-                });
-
-                
-            } catch (error) {
-                console.error('Ошибка при загрузке данных для выпадающих списков:', error.message);
-            }
-
-            // Add event listener to fetch contractor based on code
-            document.getElementById('code').addEventListener('input', async function() {
-                const code = this.value;
-                if (code) {
-                    try {
-                        const response = await fetch(https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec?code=${code});
-                        const data = await response.json();
-                        if (data.contractor) {
-                            document.getElementById('contractor').innerHTML = <option value="${data.contractor}">${data.contractor}</option>;
-                        } else {
-                            document.getElementById('contractor').innerHTML = <option value="">Код не найден</option>;
-                        }
-                    } catch (error) {
-                        console.error('Ошибка при получении контрагента:', error.message);
-                    }
-                } else {
-                    document.getElementById('contractor').innerHTML = '';
-                }
-            });
-
-            const form = document.getElementById('dataForm');
-            form.addEventListener('submit', async e => {
-                e.preventDefault();
-
-                const formData = new FormData(form);
-                formData.append('tgUserId', userData.id || '');
-                formData.append('tgUserName', userData.username || '');
-                formData.append('operation', 'updateRates');
-
-                try {
-                    const response = await fetch('https://script.google.com/macros/s/AKfycbwnSQ2lzfyetr2yJUzryZmzZGzJOFgCsMlomFiIDx5Mg4bCNM1dSKsEGsbjTFxDdDY9yg/exec', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const data = await response.json();
-                    if (data.result === 'success') {
-                        alert('Данные успешно отправлены!');
-                        Telegram.WebApp.close();
-                    } else {
-                        alert('При отправке данных произошла ошибка: ' + data.message);
-                    }
-                } catch (error) {
-                    console.error('Ошибка!', error.message);
-                }
-            });
-        });
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>
