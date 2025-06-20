@@ -96,90 +96,183 @@
     Telegram.WebApp.expand();
 
     let userData = {};
-
+    
     document.addEventListener('DOMContentLoaded', async () => {
-      if (Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
-        userData = Telegram.WebApp.initDataUnsafe.user;
-      }
-
-      try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec');
-        const data = await response.json();
-
-        // Заполняем города
-        const branchSelect = document.getElementById('branch');
-        data.branch.forEach(branch => {
-          const option = document.createElement('option');
-          option.value = branch;
-          option.text = branch.slice(0, -9);
-          branchSelect.appendChild(option);
-        });
-
-        // Заполняем таблицу курсов
-        const tbody = document.querySelector('#currencyTable tbody');
-        data.currencies.forEach(currency => {
-          if (currency.currency && currency.buy && currency.sell) {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${currency.currency}</td>
-              <td><input type="number" step="0.01" value="${currency.buy}" data-currency="${currency.currency}" data-type="buy"></td>
-              <td><input type="number" step="0.01" value="${currency.sell}" data-currency="${currency.currency}" data-type="sell"></td>
-            `;
-            tbody.appendChild(row);
-          }
-        });
-
-      } catch (error) {
-        console.error('Ошибка при загрузке данных:', error.message);
-      }
-
-      // Обработка формы
-      document.getElementById('cityForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('branch', document.getElementById('branch').value);
-        formData.append('tgUserId', userData.id || '');
-        formData.append('tgUserName', userData.username || '');
-        formData.append('operation', 'ОбновлениеКурсов');
-
-        // Собираем изменённые курсы
-        const inputs = document.querySelectorAll('#currencyTable input');
-        const currencyMap = {};
-
-        inputs.forEach(input => {
-          const curr = input.dataset.currency;
-          const type = input.dataset.type;
-          if (!currencyMap[curr]) currencyMap[curr] = {};
-          currencyMap[curr][type] = input.value;
-        });
-
-        const updatedCurrencies = Object.keys(currencyMap).map(currency => ({
-          currency,
-          buy: currencyMap[currency].buy,
-          sell: currencyMap[currency].sell
-        }));
-
-        formData.append('currencies', JSON.stringify(updatedCurrencies));
-
-        try {
-          const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec', {
-            method: 'POST',
-            body: formData
-          });
-          const result = await response.json();
-
-          if (result.result === 'success') {
-            alert('Изменения отправлены!');
-            Telegram.WebApp.close();
-          } else {
-            alert('Ошибка: ' + result.message);
-          }
-        } catch (err) {
-          console.error('Ошибка отправки:', err.message);
+        let userData = {};
+        if (Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            userData = Telegram.WebApp.initDataUnsafe.user || {};
+            console.log("TG User:", userData);
+        } else {
+            console.error('Telegram WebApp не найден');
         }
-      });
+    
+        // Подгружаем города и валюты
+        try {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec');
+            const data = await response.json();
+    
+            // Города
+            const branchSelect = document.getElementById('branch');
+            data.branch.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch;
+                option.text = branch.slice(0, -9);
+                branchSelect.appendChild(option);
+            });
+    
+            // Валюты
+            const tbody = document.querySelector('#currencyTable tbody');
+            data.currencies.forEach(c => {
+                if (c.currency && c.buy && c.sell) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${c.currency}</td>
+                        <td><input type="number" step="0.01" value="${c.buy}" data-currency="${c.currency}" data-type="buy"></td>
+                        <td><input type="number" step="0.01" value="${c.sell}" data-currency="${c.currency}" data-type="sell"></td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            });
+        } catch (err) {
+            console.error("Ошибка загрузки данных:", err.message);
+        }
+    
+        // Отправка формы
+        document.getElementById('cityForm').addEventListener('submit', async e => {
+            e.preventDefault();
+    
+            const form = document.getElementById('cityForm');
+            const formData = new FormData();
+    
+            formData.append('branch', document.getElementById('branch').value);
+            formData.append('tgUserId', userData.id || '');
+            formData.append('tgUserName', userData.username || '');
+            formData.append('operation', 'ОбновлениеКурсов');
+    
+            // Собираем курсы
+            const inputs = document.querySelectorAll('#currencyTable input');
+            const currencyMap = {};
+            inputs.forEach(input => {
+                const curr = input.dataset.currency;
+                const type = input.dataset.type;
+                if (!currencyMap[curr]) currencyMap[curr] = {};
+                currencyMap[curr][type] = input.value;
+            });
+    
+            const updatedCurrencies = Object.keys(currencyMap).map(currency => ({
+                currency,
+                buy: currencyMap[currency].buy,
+                sell: currencyMap[currency].sell
+            }));
+    
+            formData.append('currencies', JSON.stringify(updatedCurrencies));
+            console.log("Отправка данных:", Object.fromEntries(formData));
+    
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                const result = await response.json();
+                if (result.result === 'success') {
+                    alert('Курсы успешно обновлены!');
+                    Telegram.WebApp.close();
+                } else {
+                    alert('Ошибка на сервере: ' + result.message);
+                }
+            } catch (err) {
+                console.error('Ошибка отправки:', err.message);
+            }
+        });
     });
+
+    
+    // document.addEventListener('DOMContentLoaded', async () => {
+    //   if (Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
+    //     userData = Telegram.WebApp.initDataUnsafe.user;
+    //   }
+
+    //   try {
+    //     const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec');
+    //     const data = await response.json();
+
+    //     // Заполняем города
+    //     const branchSelect = document.getElementById('branch');
+    //     data.branch.forEach(branch => {
+    //       const option = document.createElement('option');
+    //       option.value = branch;
+    //       option.text = branch.slice(0, -9);
+    //       branchSelect.appendChild(option);
+    //     });
+
+    //     // Заполняем таблицу курсов
+    //     const tbody = document.querySelector('#currencyTable tbody');
+    //     data.currencies.forEach(currency => {
+    //       if (currency.currency && currency.buy && currency.sell) {
+    //         const row = document.createElement('tr');
+    //         row.innerHTML = `
+    //           <td>${currency.currency}</td>
+    //           <td><input type="number" step="0.01" value="${currency.buy}" data-currency="${currency.currency}" data-type="buy"></td>
+    //           <td><input type="number" step="0.01" value="${currency.sell}" data-currency="${currency.currency}" data-type="sell"></td>
+    //         `;
+    //         tbody.appendChild(row);
+    //       }
+    //     });
+
+    //   } catch (error) {
+    //     console.error('Ошибка при загрузке данных:', error.message);
+    //   }
+
+    //   // Обработка формы
+    //   document.getElementById('cityForm').addEventListener('submit', async (e) => {
+    //     e.preventDefault();
+
+    //     const formData = new FormData();
+    //     formData.append('branch', document.getElementById('branch').value);
+    //     formData.append('tgUserId', userData.id || '');
+    //     formData.append('tgUserName', userData.username || '');
+    //     formData.append('operation', 'ОбновлениеКурсов');
+
+    //     // Собираем изменённые курсы
+    //     const inputs = document.querySelectorAll('#currencyTable input');
+    //     const currencyMap = {};
+
+    //     inputs.forEach(input => {
+    //       const curr = input.dataset.currency;
+    //       const type = input.dataset.type;
+    //       if (!currencyMap[curr]) currencyMap[curr] = {};
+    //       currencyMap[curr][type] = input.value;
+    //     });
+
+    //     const updatedCurrencies = Object.keys(currencyMap).map(currency => ({
+    //       currency,
+    //       buy: currencyMap[currency].buy,
+    //       sell: currencyMap[currency].sell
+    //     }));
+
+    //     formData.append('currencies', JSON.stringify(updatedCurrencies));
+
+    //     try {
+    //       const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec', {
+    //         method: 'POST',
+    //         body: formData
+    //       });
+    //       const result = await response.json();
+
+    //       if (result.result === 'success') {
+    //         alert('Изменения отправлены!');
+    //         Telegram.WebApp.close();
+    //       } else {
+    //         alert('Ошибка: ' + result.message);
+    //       }
+    //     } catch (err) {
+    //       console.error('Ошибка отправки:', err.message);
+    //     }
+    //   });
+    // });
   </script>
 </body>
 </html>
