@@ -113,6 +113,30 @@
         try {
             const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec');
             const data = await response.json();
+
+            // Проверка прав доступа по Telegram userId
+            const allowedUserIds = data.allowedUserIds || [];
+            const tgUserId = String(userData.id || '');
+            
+            if (!allowedUserIds.includes(tgUserId)) {
+              alert('У вас нет доступа к отправке формы.');
+              
+              // // Блокируем кнопку
+              // const submitBtn = document.querySelector('.submit-btn');
+              // submitBtn.disabled = true;
+              // submitBtn.style.backgroundColor = '#666';
+              // submitBtn.style.cursor = 'not-allowed';
+              
+              // // Дополнительно можно запретить редактирование полей
+              // document.querySelectorAll('#currencyTable input').forEach(input => {
+              //   input.disabled = true;
+              //   input.style.backgroundColor = '#555';
+              // });
+            
+              // Скрываем форму
+              document.getElementById('cityForm').style.display = 'none';
+            }
+
           
             // Города
             const branchSelect = document.getElementById('branch');
