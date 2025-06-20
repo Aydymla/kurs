@@ -112,7 +112,7 @@
         try {
             const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec');
             const data = await response.json();
-    
+          
             // Города
             const branchSelect = document.getElementById('branch');
             data.branch.forEach(branch => {
@@ -129,26 +129,37 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${c.currency}</td>
-                        <td>
-                            <input type="number" 
-                                   step="0.01" 
-                                   value="${c.buy}" 
-                                   data-currency="${c.currency}" 
-                                   data-type="buy"
-                                   data-original="${c.buy}">
-                        </td>
-                        <td>
-                            <input type="number" 
-                                   step="0.01" 
-                                   value="${c.sell}" 
-                                   data-currency="${c.currency}" 
-                                   data-type="sell"
-                                   data-original="${c.sell}">
-                        </td>
+                        <td><input type="number" step="0.01" value="${c.buy}" data-currency="${c.currency}" data-type="buy"></td>
+                        <td><input type="number" step="0.01" value="${c.sell}" data-currency="${c.currency}" data-type="sell"></td>
                     `;
                     tbody.appendChild(row);
                 }
-            });
+            });              
+            //   data.currencies.forEach(c => {
+            //     if (c.currency && c.buy && c.sell) {
+            //         const row = document.createElement('tr');
+            //         row.innerHTML = `
+            //             <td>${c.currency}</td>
+            //             <td>
+            //                 <input type="number" 
+            //                        step="0.01" 
+            //                        value="${c.buy}" 
+            //                        data-currency="${c.currency}" 
+            //                        data-type="buy"
+            //                        data-original="${c.buy}">
+            //             </td>
+            //             <td>
+            //                 <input type="number" 
+            //                        step="0.01" 
+            //                        value="${c.sell}" 
+            //                        data-currency="${c.currency}" 
+            //                        data-type="sell"
+            //                        data-original="${c.sell}">
+            //             </td>
+            //         `;
+            //         tbody.appendChild(row);
+            //     }
+            // });
         } catch (err) {
             console.error("Ошибка загрузки данных:", err.message);
         }
