@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Выбор города</title>
+  <title>Выбор города и редактирование курсов</title>
   <style>
     body {
       font: 14px Arial, sans-serif;
@@ -21,6 +21,8 @@
       border-radius: 10px;
       width: 100%;
       max-width: 400px;
+      overflow-y: auto;
+      max-height: 90vh;
     }
     label, select {
       display: block;
@@ -59,6 +61,14 @@
     th {
       background-color: #2a2a2a;
     }
+    input[type="number"] {
+      width: 100%;
+      padding: 5px;
+      border-radius: 5px;
+      border: none;
+      background-color: #333;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -96,37 +106,34 @@
         const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec');
         const data = await response.json();
 
-        // Заполняем список городов
+        // Заполняем города
         const branchSelect = document.getElementById('branch');
-        if (Array.isArray(data.branch)) {
-          data.branch.forEach(branch => {
-            const option = document.createElement('option');
-            option.value = branch;
-            option.text = branch.slice(0, -9);
-            branchSelect.appendChild(option);
-          });
-        }
+        data.branch.forEach(branch => {
+          const option = document.createElement('option');
+          option.value = branch;
+          option.text = branch.slice(0, -9);
+          branchSelect.appendChild(option);
+        });
 
-        // Заполняем таблицу валют
+        // Заполняем таблицу курсов
         const tbody = document.querySelector('#currencyTable tbody');
-        if (Array.isArray(data.currencies)) {
-          data.currencies.forEach(currency => {
-            if (currency.currency && currency.buy && currency.sell) {
-              const row = document.createElement('tr');
-              row.innerHTML = `
-                <td>${currency.currency}</td>
-                <td>${currency.buy}</td>
-                <td>${currency.sell}</td>
-              `;
-              tbody.appendChild(row);
-            }
-          });
-        }
+        data.currencies.forEach(currency => {
+          if (currency.currency && currency.buy && currency.sell) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${currency.currency}</td>
+              <td><input type="number" step="0.01" value="${currency.buy}" data-currency="${currency.currency}" data-type="buy"></td>
+              <td><input type="number" step="0.01" value="${currency.sell}" data-currency="${currency.currency}" data-type="sell"></td>
+            `;
+            tbody.appendChild(row);
+          }
+        });
 
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error.message);
       }
 
+      // Обработка формы
       document.getElementById('cityForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -134,7 +141,26 @@
         formData.append('branch', document.getElementById('branch').value);
         formData.append('tgUserId', userData.id || '');
         formData.append('tgUserName', userData.username || '');
-        formData.append('operation', 'Выдача');
+        formData.append('operation', 'ОбновлениеКурсов');
+
+        // Собираем изменённые курсы
+        const inputs = document.querySelectorAll('#currencyTable input');
+        const currencyMap = {};
+
+        inputs.forEach(input => {
+          const curr = input.dataset.currency;
+          const type = input.dataset.type;
+          if (!currencyMap[curr]) currencyMap[curr] = {};
+          currencyMap[curr][type] = input.value;
+        });
+
+        const updatedCurrencies = Object.keys(currencyMap).map(currency => ({
+          currency,
+          buy: currencyMap[currency].buy,
+          sell: currencyMap[currency].sell
+        }));
+
+        formData.append('currencies', JSON.stringify(updatedCurrencies));
 
         try {
           const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec', {
@@ -142,8 +168,9 @@
             body: formData
           });
           const result = await response.json();
+
           if (result.result === 'success') {
-            alert('Город отправлен!');
+            alert('Изменения отправлены!');
             Telegram.WebApp.close();
           } else {
             alert('Ошибка: ' + result.message);
