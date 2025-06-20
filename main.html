@@ -167,54 +167,43 @@
         // Отправка формы
         document.getElementById('cityForm').addEventListener('submit', async e => {
             e.preventDefault();
-        
+    
+            const form = document.getElementById('cityForm');
             const formData = new FormData();
-            const branch = document.getElementById('branch').value;
-        
-            formData.append('branch', branch);
+    
+            formData.append('branch', document.getElementById('branch').value);
             formData.append('tgUserId', userData.id || '');
             formData.append('tgUserName', userData.username || '');
             formData.append('operation', 'ОбновлениеКурсов');
-        
-            // Собираем ТОЛЬКО изменённые курсы
+    
+            // Собираем курсы
             const inputs = document.querySelectorAll('#currencyTable input');
-            const currencyChanges = {};
-        
+            const currencyMap = {};
             inputs.forEach(input => {
                 const curr = input.dataset.currency;
                 const type = input.dataset.type;
-                const original = input.dataset.original;
-                const current = input.value;
-        
-                if (current !== original) {
-                    if (!currencyChanges[curr]) currencyChanges[curr] = {};
-                    currencyChanges[curr][type] = current;
-                }
+                if (!currencyMap[curr]) currencyMap[curr] = {};
+                currencyMap[curr][type] = input.value;
             });
-        
-            const changed = Object.keys(currencyChanges).map(currency => ({
+    
+            const updatedCurrencies = Object.keys(currencyMap).map(currency => ({
                 currency,
-                buy: currencyChanges[currency].buy || null,
-                sell: currencyChanges[currency].sell || null
+                buy: currencyMap[currency].buy,
+                sell: currencyMap[currency].sell
             }));
-        
-            if (changed.length === 0) {
-                alert("Нет изменений для отправки.");
-                return;
-            }
-        
-            formData.append('currencies', JSON.stringify(changed));
-            console.log("Отправка изменённых курсов:", changed);
-        
+    
+            formData.append('currencies', JSON.stringify(updatedCurrencies));
+            console.log("Отправка данных:", Object.fromEntries(formData));
+    
             try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec', {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbx0ZrTyKAsCLQJpnANA22Or1Jf_0jSucpLDtwKpbyXw7OHgZhZe0sn_bQrMYCN4R0AV/exec', {
                     method: 'POST',
                     body: formData
                 });
-        
+    
                 const result = await response.json();
                 if (result.result === 'success') {
-                    alert('Изменённые курсы успешно отправлены!');
+                    alert('Курсы успешно обновлены!');
                     Telegram.WebApp.close();
                 } else {
                     alert('Ошибка на сервере: ' + result.message);
@@ -223,6 +212,65 @@
                 console.error('Ошибка отправки:', err.message);
             }
         });
+    });
+        // document.getElementById('cityForm').addEventListener('submit', async e => {
+        //     e.preventDefault();
+        
+        //     const formData = new FormData();
+        //     const branch = document.getElementById('branch').value;
+        
+        //     formData.append('branch', branch);
+        //     formData.append('tgUserId', userData.id || '');
+        //     formData.append('tgUserName', userData.username || '');
+        //     formData.append('operation', 'ОбновлениеКурсов');
+        
+        //     // Собираем ТОЛЬКО изменённые курсы
+        //     const inputs = document.querySelectorAll('#currencyTable input');
+        //     const currencyChanges = {};
+        
+        //     inputs.forEach(input => {
+        //         const curr = input.dataset.currency;
+        //         const type = input.dataset.type;
+        //         const original = input.dataset.original;
+        //         const current = input.value;
+        
+        //         if (current !== original) {
+        //             if (!currencyChanges[curr]) currencyChanges[curr] = {};
+        //             currencyChanges[curr][type] = current;
+        //         }
+        //     });
+        
+        //     const changed = Object.keys(currencyChanges).map(currency => ({
+        //         currency,
+        //         buy: currencyChanges[currency].buy || null,
+        //         sell: currencyChanges[currency].sell || null
+        //     }));
+        
+        //     if (changed.length === 0) {
+        //         alert("Нет изменений для отправки.");
+        //         return;
+        //     }
+        
+        //     formData.append('currencies', JSON.stringify(changed));
+        //     console.log("Отправка изменённых курсов:", changed);
+        
+        //     try {
+        //         const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec', {
+        //             method: 'POST',
+        //             body: formData
+        //         });
+        
+        //         const result = await response.json();
+        //         if (result.result === 'success') {
+        //             alert('Изменённые курсы успешно отправлены!');
+        //             Telegram.WebApp.close();
+        //         } else {
+        //             alert('Ошибка на сервере: ' + result.message);
+        //         }
+        //     } catch (err) {
+        //         console.error('Ошибка отправки:', err.message);
+        //     }
+        // });
   </script>
 </body>
 </html>
