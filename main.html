@@ -46,12 +46,37 @@
     .submit-btn:hover {
       background-color: #0056b3;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #555;
+    }
+    th {
+      background-color: #2a2a2a;
+    }
   </style>
 </head>
 <body>
   <form id="cityForm">
     <label for="branch">Выберите город:</label>
     <select id="branch" name="branch" required></select>
+
+    <table id="currencyTable">
+      <thead>
+        <tr>
+          <th>Валюта</th>
+          <th>Покупка</th>
+          <th>Продажа</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
     <input class="submit-btn" type="submit" value="Отправить" />
   </form>
 
@@ -71,15 +96,35 @@
         const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec');
         const data = await response.json();
 
+        // Заполняем список городов
         const branchSelect = document.getElementById('branch');
-        data.branch.forEach(branch => {
-          const option = document.createElement('option');
-          option.value = branch;
-          option.text = branch.slice(0, -9);
-          branchSelect.appendChild(option);
-        });
+        if (Array.isArray(data.branch)) {
+          data.branch.forEach(branch => {
+            const option = document.createElement('option');
+            option.value = branch;
+            option.text = branch.slice(0, -9);
+            branchSelect.appendChild(option);
+          });
+        }
+
+        // Заполняем таблицу валют
+        const tbody = document.querySelector('#currencyTable tbody');
+        if (Array.isArray(data.currencies)) {
+          data.currencies.forEach(currency => {
+            if (currency.currency && currency.buy && currency.sell) {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${currency.currency}</td>
+                <td>${currency.buy}</td>
+                <td>${currency.sell}</td>
+              `;
+              tbody.appendChild(row);
+            }
+          });
+        }
+
       } catch (error) {
-        console.error('Ошибка при загрузке городов:', error.message);
+        console.error('Ошибка при загрузке данных:', error.message);
       }
 
       document.getElementById('cityForm').addEventListener('submit', async (e) => {
