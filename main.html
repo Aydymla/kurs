@@ -123,18 +123,17 @@
                 branchSelect.appendChild(option);
             });
 
-
             // Форматирование чисел: минимум 2 знака, максимум 4
             function formatRate(value) {
               if (typeof value === "string") {
-                value = value.replace(",", "."); // Заменяем , на .
+                value = value.replace(",", ".");
               }
               let num = parseFloat(value);
               if (isNaN(num)) return '';
             
-              let str = num.toFixed(4); // максимум 4 знака
-              // Убираем лишние нули справа, оставляя минимум 2
-              while (str.indexOf('.') !== -1 && (str.endsWith('0') || str.endsWith('.'))) {
+              let str = num.toFixed(4); // округляем до 4 знаков
+              // Удаляем лишние нули, оставляя минимум 2
+              while (str.includes('.') && (str.endsWith('0') || str.endsWith('.'))) {
                 const decimals = str.split('.')[1];
                 if (str.endsWith('0') && decimals.length > 2) {
                   str = str.slice(0, -1);
@@ -147,7 +146,6 @@
               return str;
             }
 
-          
             // Валюты
             const tbody = document.querySelector('#currencyTable tbody');
             data.currencies.forEach(c => {
