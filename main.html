@@ -96,6 +96,7 @@
     Telegram.WebApp.expand();
 
     let userData = {};
+    let originalRates = {};
     
     document.addEventListener('DOMContentLoaded', async () => {
         let userData = {};
@@ -126,6 +127,13 @@
             const tbody = document.querySelector('#currencyTable tbody');
             data.currencies.forEach(c => {
                 if (c.currency && c.buy && c.sell) {
+
+                  // Сохраняем оригинальные значения
+                  originalRates[c.currency] = {
+                      buy: parseFloat(c.buy),
+                      sell: parseFloat(c.sell)
+                  };
+                  
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${c.currency}</td>
@@ -134,32 +142,7 @@
                     `;
                     tbody.appendChild(row);
                 }
-            });              
-            //   data.currencies.forEach(c => {
-            //     if (c.currency && c.buy && c.sell) {
-            //         const row = document.createElement('tr');
-            //         row.innerHTML = `
-            //             <td>${c.currency}</td>
-            //             <td>
-            //                 <input type="number" 
-            //                        step="0.01" 
-            //                        value="${c.buy}" 
-            //                        data-currency="${c.currency}" 
-            //                        data-type="buy"
-            //                        data-original="${c.buy}">
-            //             </td>
-            //             <td>
-            //                 <input type="number" 
-            //                        step="0.01" 
-            //                        value="${c.sell}" 
-            //                        data-currency="${c.currency}" 
-            //                        data-type="sell"
-            //                        data-original="${c.sell}">
-            //             </td>
-            //         `;
-            //         tbody.appendChild(row);
-            //     }
-            // });
+            });    
         } catch (err) {
             console.error("Ошибка загрузки данных:", err.message);
         }
@@ -186,12 +169,27 @@
                 currencyMap[curr][type] = input.value;
             });
     
-            const updatedCurrencies = Object.keys(currencyMap).map(currency => ({
-                currency,
-                buy: currencyMap[currency].buy,
-                sell: currencyMap[currency].sell
-            }));
-    
+            // const updatedCurrencies = Object.keys(currencyMap).map(currency => ({
+            //     currency,
+            //     buy: currencyMap[currency].buy,
+            //     sell: currencyMap[currency].sell
+            // }));
+            const updatedCurrencies = [];
+            Object.keys(currencyMap).forEach(currency => {
+                const orig = originalRates[currency];
+                const newBuy = parseFloat(currencyMap[currency].buy);
+                const newSell = parseFloat(currencyMap[currency].sell);
+                // Сравниваем с оригинальными значениями
+                if (!orig || orig.buy !== newBuy || orig.sell !== newSell) {
+                    updatedCurrencies.push({
+                        currency,
+                        buy: newBuy,
+                        sell: newSell
+                    });
+                }
+            });
+
+          
             formData.append('currencies', JSON.stringify(updatedCurrencies));
             console.log("Отправка данных:", Object.fromEntries(formData));
     
@@ -213,64 +211,6 @@
             }
         });
     });
-        // document.getElementById('cityForm').addEventListener('submit', async e => {
-        //     e.preventDefault();
-        
-        //     const formData = new FormData();
-        //     const branch = document.getElementById('branch').value;
-        
-        //     formData.append('branch', branch);
-        //     formData.append('tgUserId', userData.id || '');
-        //     formData.append('tgUserName', userData.username || '');
-        //     formData.append('operation', 'ОбновлениеКурсов');
-        
-        //     // Собираем ТОЛЬКО изменённые курсы
-        //     const inputs = document.querySelectorAll('#currencyTable input');
-        //     const currencyChanges = {};
-        
-        //     inputs.forEach(input => {
-        //         const curr = input.dataset.currency;
-        //         const type = input.dataset.type;
-        //         const original = input.dataset.original;
-        //         const current = input.value;
-        
-        //         if (current !== original) {
-        //             if (!currencyChanges[curr]) currencyChanges[curr] = {};
-        //             currencyChanges[curr][type] = current;
-        //         }
-        //     });
-        
-        //     const changed = Object.keys(currencyChanges).map(currency => ({
-        //         currency,
-        //         buy: currencyChanges[currency].buy || null,
-        //         sell: currencyChanges[currency].sell || null
-        //     }));
-        
-        //     if (changed.length === 0) {
-        //         alert("Нет изменений для отправки.");
-        //         return;
-        //     }
-        
-        //     formData.append('currencies', JSON.stringify(changed));
-        //     console.log("Отправка изменённых курсов:", changed);
-        
-        //     try {
-        //         const response = await fetch('https://script.google.com/macros/s/AKfycbyOm7FhKQXrpBWsYA9hvGnihM0gTeQmk50MjwKW7fDYw9o9bk96W3pTI6PCmn9jq9uHBA/exec', {
-        //             method: 'POST',
-        //             body: formData
-        //         });
-        
-        //         const result = await response.json();
-        //         if (result.result === 'success') {
-        //             alert('Изменённые курсы успешно отправлены!');
-        //             Telegram.WebApp.close();
-        //         } else {
-        //             alert('Ошибка на сервере: ' + result.message);
-        //         }
-        //     } catch (err) {
-        //         console.error('Ошибка отправки:', err.message);
-        //     }
-        // });
   </script>
 </body>
 </html>
