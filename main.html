@@ -126,23 +126,24 @@
             // Валюты
             const tbody = document.querySelector('#currencyTable tbody');
             data.currencies.forEach(c => {
-                if (c.currency && c.buy && c.sell) {
-
-                  // Сохраняем оригинальные значения
-                  originalRates[c.currency] = {
-                      buy: parseFloat(c.buy),
-                      sell: parseFloat(c.sell)
-                  };
-                  
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${c.currency}</td>
-                        <td><input type="number" step="0.01" value="${c.buy}" data-currency="${c.currency}" data-type="buy"></td>
-                        <td><input type="number" step="0.01" value="${c.sell}" data-currency="${c.currency}" data-type="sell"></td>
-                    `;
-                    tbody.appendChild(row);
-                }
-            });    
+              if (c.currency && c.buy && c.sell) {
+                originalRates[c.currency] = {
+                  buy: parseFloat(c.buy),
+                  sell: parseFloat(c.sell)
+                };
+            
+                const buyFormatted = formatRate(c.buy);
+                const sellFormatted = formatRate(c.sell);
+            
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                  <td>${c.currency}</td>
+                  <td><input type="number" step="0.0001" value="${buyFormatted}" data-currency="${c.currency}" data-type="buy"></td>
+                  <td><input type="number" step="0.0001" value="${sellFormatted}" data-currency="${c.currency}" data-type="sell"></td>
+                `;
+                tbody.appendChild(row);
+              }
+            });  
         } catch (err) {
             console.error("Ошибка загрузки данных:", err.message);
         }
